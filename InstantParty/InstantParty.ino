@@ -1,20 +1,3 @@
-// TODO
-// *   Ensure short reaction times in looping effects:
-//        Implement own delay loop that checks frequently if effect variable is changed.
-//        If so, the function that uses the delay variable breaks and the effect selecter
-//        is called. The effect selecter should not be called uppon effect selection via DMX. (change that!)
-// *   If brightness is changed, readjust realRGB
-// DMX CHANNELS:
-// 0: Red               Color chan Red
-// 1: Green             Color chan Green
-// 2: Blue              Color chan Blue
-// 3: Brightness        Is multiplied with colors
-// 4: Effect            Loops an Effect
-// 5: Effect Parameter  Chilldown time, etc.  
-// 6: Bang              Triggers an Effect only ONCE
-// 7: Base Red          Color of the internal LEDs
-// 8: Base Green        Color of the internal LEDs
-// 9: Base Blue         Color of the internal LEDs
 
 #include "SPI.h"
 #include "Adafruit_WS2801.h"
@@ -39,8 +22,8 @@ uint8_t gayness = 0;
 uint8_t hue = 0;
 uint8_t wildness = 0;
 
-uint8_t brightness = 255;
-uint8_t saturation = 255;
+unsigned int brightness = 255;
+unsigned int saturation = 255;
 
 // Effect numbers
 #define RGB 0
@@ -68,7 +51,6 @@ uint8_t effect = WOBBLE;
 //uint8_t effect = RAINBOWSPARKLE;
 boolean effectHasChanged = false;
 int scheduledEffect = 0;
-float brightness = 1.0;
 // realColors are multiplied with brightness
 unsigned int realRed =0;
 unsigned int realGreen = 255;
@@ -83,57 +65,35 @@ uint8_t DMX_Bang = 0;
 
 
 // Configure the LED Strip
-Adafruit_WS2801 strip = Adafruit_WS2801(40, dataPin, clockPin);
+Adafruit_WS2801 strip = Adafruit_WS2801(segments * LpS, dataPin, clockPin);
 
-// the setup routine runs once when you press reset:
 void setup() {             
-
-
-  // Enable LED stip
   strip.begin();
-  // Update LED contents, to start they are all 'off'
   strip.show();
-
-  selectEffect(true);
+  selectEffect();
 }
 
-// the loop routine runs over and over again forever:
 void loop() 
 {
-  //analogWrite(LED_B,128);
-  //setAllColor();
-  //strip.show();
-  //strobe(false); 
-  //color(false);
-  //  for (int i = 0;i<360;i++){
-  //    realRed =i;
-  selectEffect(true);
+  selectEffect();
   setEffectRandom();
   setColorsRandom();
-  // delay(500);
-  //  }
-  // selectEffect(false);
-  // blinky(false);
 }
 
 
-void selectEffect(boolean once){
-  //analogWrite(LED_G, random(255));
-  if (effect == STROBE) strobe(once);
-  else if (effect == RAINBOW) rainbow(once);
-  else if (effect == BLACK) black(once);
-  else if (effect == COLOR) color(once);
-  else if (effect == SPARKLE) sparkle(once);
+void selectEffect(){
+  if (effect == STROBE) strobe();
+  else if (effect == RAINBOW) rainbow();
+  else if (effect == BLACK) black();
+  else if (effect == COLOR) colorize();
+  else if (effect == SPARKLE) sparkle();
   //else if (effect == RGB) rgb (once);
-  else if (effect == BLINK) blinky(once);
-  else if (effect == RAINBOWFILL) rainbowfill(once);
-  else if (effect == RAINBOWSWEEP) rainbowsweep(once);
-  else if (effect == RAINBOWSPARKLE) rainbowsparkle(once);
-  else if (effect == WOBBLE) wobble(once);
+  else if (effect == BLINK) blinky();
+  else if (effect == RAINBOWFILL) rainbowfill();
+  else if (effect == RAINBOWSWEEP) rainbowsweep();
+  else if (effect == RAINBOWSPARKLE) rainbowsparkle();
+  else if (effect == WOBBLE) wobble();
 }
-
-
-
 
 
 void setEffectRandom(){
@@ -159,6 +119,8 @@ void setEffectRandom(){
 
 
 void setColorsRandom(){
+
+
   int rnd = random(7);
   if (rnd ==1){
     realRed =255;

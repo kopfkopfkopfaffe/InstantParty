@@ -7,61 +7,50 @@ void swirl(){
   setAllBlack();
 }
 
-void black(boolean once){
+void black(){
   setAllBlack();
   while(effect == BLACK){
-    delay(20);
-    if (once) break;
+    iDelay(20);
   }
 }
 
-void blinky(boolean once){
-  // while (effect == BLINK){
-  delay(500);
-  setAllColor(realRed, realGreen, realBlue);
-  delay(500);
+void blinky(){
+  while (effect == BLINK){
+  iDelay(2 * 270 - velocity);
+  setAllColor(randomColor);
+  iDelay(2 * 270 - velocity);
   setAllBlack();
-  // if (once) break;
-  // }
-
+}
 }
 
-void color(boolean once){
-
-  // while(effect == COLOR){
-  //delayPoll(10);
-  // setAllHSV(realRed, realGreen, realBlue);
-
-  setAllColor(realRed, realGreen, realBlue);
-  // delay(20);
-  //   if (once) break;
-  // }
+void colorize(){
+  while (effect == COLOR){
+  setAllColor(randomColor);
+}
 }
 
-void strobe(boolean once){
-  // while(effect == STROBE){
-  //setAllColor(255,255,255);
+// strobelight. the wilder, the longer. different for each segment
+void strobe(){
   int i = 0;
-  int maxi = random (10,30);
+  int maxi = random (10,wildness/2);
   while (i<maxi){
-    setAllColor(realRed, realGreen, realBlue);
-    delay(5);
+    for (int i = 0; i < segments;i++){
+      setSegmentColor(i,randomColor);
+    }
+    iDelay(5+(25-velocity/10));
     setAllBlack();
-    delay(100);
+    iDelay(100+(25-velocity/10));
     i++;
   }
-  //if (once) break;
-  // }
 }
 
-void rainbow(boolean once){
+void rainbow(){
   while(effect == RAINBOW){
     rainbowCycle(2,brightness/4);
-    if (once) break;
   }
 }
 
-void rainbowfill(boolean once){
+void rainbowfill(){
   int i;
   setAllBlack();
   while(effect == RAINBOWFILL){
@@ -71,11 +60,10 @@ void rainbowfill(boolean once){
       delay(DMX_EffectParameter);
     }
     setAllBlack();
-    if (once) break;
   }
 }
 
-void rainbowsweep(boolean once){
+void rainbowsweep(){
   int i;
   setAllBlack();
   while(effect == RAINBOWSWEEP){
@@ -93,19 +81,18 @@ void rainbowsweep(boolean once){
       delay(DMX_EffectParameter);
     }
     setAllBlack();
-    if (once) break;
   }
 }
 
 
-void sparkle(boolean once){
+void sparkle(){
   int sparks [strip.numPixels()];
   while(effect == SPARKLE){
     setAllBlack();
     for (int i = 0;i < strip.numPixels();i++)sparks[i]= (-1);
     boolean running = true;
     /*
-  * An array holds the states of each pixel which is initially -1, inactive
+     * An array holds the states of each pixel which is initially -1, inactive
      * by random, a pixel is selected. if it is inactive, it is put to full brightness.
      * each pixel that is active fades down during each loop.
      * if all pixels have burned and faded down, stop
@@ -145,12 +132,11 @@ void sparkle(boolean once){
         setAllBlack();
       }
     }
-    if (once) break;
   }
 }
 
 
-void rainbowsparkle(boolean once){
+void rainbowsparkle(){
   int sparks [strip.numPixels()];
   while(effect == RAINBOWSPARKLE){
     setAllBlack();
@@ -197,15 +183,12 @@ void rainbowsparkle(boolean once){
         setAllBlack();
       }
     }
-    if (once) break;
   }
 }
 
-void wobble (boolean once){
+void wobble (){
   float dots [strip.numPixels()+4];
-
   while(effect == WOBBLE){
-
     for (int i = 0; i<strip.numPixels();i++){
       for (int i = 0;i < strip.numPixels()+4;i++)dots[i]=0.0;
       dots[i+2]=1.0;
@@ -238,35 +221,13 @@ void wobble (boolean once){
       float speedmod = 0.1+float(float(dist1)/float(strip.numPixels()/2));
       delay(int(float(DMX_EffectParameter)*speedmod));
     }
-    if (once) break;
   }
 }
 
 /* Helper functions */
-void setAllColor(int red, int green, int blue){
-  for (int i = 0; i<strip.numPixels();i++){
-    strip.setPixelColor(i,red,green,blue);
-  }
-  strip.show();
-}
 
 
-void setAllHSV(unsigned int red, unsigned int green, unsigned int blue){
-  for (int i = 0; i<strip.numPixels();i++){
-    strip.setPixelColor(i,hsv(red,green,blue));
-  }
-  strip.show();
-}
-
-
-void setAllBlack(){
-  for (int i = 0; i<strip.numPixels();i++){
-    strip.setPixelColor(i, 0,0,0);
-  }
-  strip.show();
-}
-
-
+/*
 void setPixels(int count){
   for (int i = 0; i<20;i++){
     strip.setPixelColor(i, 0,0,0);
@@ -277,6 +238,7 @@ void setPixels(int count){
   }
   strip.show();
 }
+*/
 
 void rainbowCycle(uint8_t wait,float b) {
   int i, j;
@@ -311,18 +273,18 @@ void colorWipe(uint32_t c, uint8_t wait) {
 
 //Input a value 0 to 255 to get a color value.
 //The colours are a transition r - g -b - back to r
-uint32_t Wheel(byte WheelPos, float b)
+uint32_t Wheel(byte WheelPos)
 {
   if (WheelPos < 85) {
-    return Color(WheelPos * 3, 255 - WheelPos * 3, 0,b);
+    return Color(WheelPos * 3, 255 - WheelPos * 3, 0);
   } 
   else if (WheelPos < 170) {
     WheelPos -= 85;
-    return Color(255 - WheelPos * 3, 0, WheelPos * 3,b);
+    return Color(255 - WheelPos * 3, 0, WheelPos * 3);
   } 
   else {
     WheelPos -= 170; 
-    return Color(0, WheelPos * 3, 255 - WheelPos * 3,b);
+    return Color(0, WheelPos * 3, 255 - WheelPos * 3);
   }
 }
 
