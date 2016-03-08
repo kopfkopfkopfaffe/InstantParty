@@ -1,18 +1,12 @@
 // Helper functions
 
-// delay that still accepts inputs while waiting
-void iDelay(int milliseconds){
-  for (int i = 0;i<milliseconds;i++){
-    checkPots();
-    delay(1);
-  }
-}
+
 
 // put in HSV, receive a 32-bit RGB color that you can feed into setPixelColor()
 uint32_t hsv(unsigned int hue, unsigned int sat, unsigned int val){
   uint32_t myHsv;
   // overwritten by global variables
-  val = brightness;
+  //val = brightness;
   sat = saturation;
 
   unsigned char r,g,b;
@@ -75,6 +69,23 @@ uint32_t rgb(byte r, byte g, byte b)
   return c;
 }
 
+// Create a 24 bit color value from R,G,B,Brightness
+uint32_t rgb(byte r, byte g, byte b, float br)
+{
+  r = byte(r * br);
+  g = byte(g * br);
+
+  b = byte(b * br);
+
+  uint32_t c;
+  c = r;
+  c <<= 8;
+  c |= g;
+  c <<= 8;
+  c |= b;
+  return c;
+}
+
 // select hue randomly around center hue with spread of gayness
 uint32_t randomColor(){
   uint32_t c;
@@ -83,6 +94,17 @@ uint32_t randomColor(){
   if (tmpHue < 0) myHue = 360 + tmpHue;
   if(tmpHue > 359) myHue = 360 - tmpHue;
   c = hsv(myHue,255,255);
+  return c;
+}
+
+// select hue randomly around center hue with spread of gayness
+uint32_t randomColor(uint8_t brightness){
+  uint32_t c;
+  int tmpHue = random (hue-gayness/2,hue+gayness/2);
+  unsigned int myHue;
+  if (tmpHue < 0) myHue = 360 + tmpHue;
+  if(tmpHue > 359) myHue = 360 - tmpHue;
+  c = hsv(myHue,255,brightness);
   return c;
 }
 

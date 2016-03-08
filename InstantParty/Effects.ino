@@ -16,17 +16,17 @@ void black(){
 
 void blinky(){
   while (effect == BLINK){
-  iDelay(2 * 270 - velocity);
-  setAllColor(randomColor());
-  iDelay(2 * 270 - velocity);
-  setAllBlack();
-}
+    iDelay(2 * 270 - velocity);
+    setAllColor(randomColor());
+    iDelay(2 * 270 - velocity);
+    setAllBlack();
+  }
 }
 
 void colorize(){
   while (effect == COLOR){
-  setAllColor(randomColor());
-}
+    setAllColor(randomColor());
+  }
 }
 
 // strobelight. the wilder, the longer. different for each segment
@@ -187,42 +187,64 @@ void rainbowsparkle(){
 }
 
 void wobble (){
-//  work around brightness here...
-/*  float dots [strip.numPixels()+4];
+  // array of brightness adjustment 
+  float dots [LpS+4];
   while(effect == WOBBLE){
-    for (int i = 0; i<strip.numPixels();i++){
-      for (int i = 0;i < strip.numPixels()+4;i++)dots[i]=0.0;
+    // generate a random color and pick components
+    uint32_t myColor = randomColor();
+    uint8_t myBlueRed = myColor;
+    uint8_t myGreen = myColor >>= 8;
+    uint8_t myRed = myColor >>= 16;
+
+    // move dot to the right over all pixels of the segment
+    for (int i = 0; i<LpS;i++){
+      // set all pixels to black
+      for (int i = 0;i < LpS+4;i++)dots[i]=0.0;
+      // set the brightness at the dot center to full.
+      // set pixels around it a little dimmer
       dots[i+2]=1.0;
       dots[i+1]=0.5; 
       dots[i+3]=0.5;
       dots[i]=0.05;
       dots[i+4]=0.05;
-      for (int i = 0;i < strip.numPixels();i++){
-        strip.setPixelColor(i,rgb(realRed,realGreen,realBlue,brightness*dots[i+2]));
+      // for all segments
+      for (int j = 0;j<segments +1;j++){
+        // render all pixels in segment
+        for (int i = j * LpS; i < (j*LpS)+LpS;i++){
+          strip.setPixelColor(i,rgb(realRed,realGreen,realBlue,brightness*dots[i+2]));
+        }
       }
       strip.show();
-      int dist = i-(strip.numPixels()/2);
+      int dist = i-(LpS/2);
       int dist1 = abs(dist);
-      float speedmod = 0.1+float(float(dist1)/float(strip.numPixels()/2));
-      delay(int(float(DMX_EffectParameter)*speedmod));
+      float speedmod = 0.1+float(float(dist1)/float(LpS/2));
+      iDelay(int(float(velocity)*speedmod));
     }
-    for (int i = strip.numPixels()-1; i>0;i--){
-      for (int i = 0;i < strip.numPixels()+4;i++)dots[i]=0.0;
+
+
+    // move dot back to the left over all pixels of the segment
+    for (int i = LpS-1; i>0;i--){
+      // for all pixels in the dot...
+      for (int i = 0;i < LpS+4;i++)dots[i]=0.0;
       dots[i+2]=1.0;
       dots[i+1]=0.5; 
       dots[i+3]=0.5;
       dots[i]=0.05;
       dots[i+4]=0.05;
-      for (int i = 0;i < strip.numPixels();i++){
-        strip.setPixelColor(i,rgb(realRed,realGreen,realBlue,brightness*dots[i+2]));
+      // for all segments
+      for (int j = 0;j<segments +1;j++){
+        // render all pixels in segment
+        for (int i = j * LpS; i < (j*LpS)+LpS;i++){
+          strip.setPixelColor(i,rgb(realRed,realGreen,realBlue,brightness*dots[i+2]));
+        }
       }
       strip.show();
-      int dist = i-(strip.numPixels()/2);
+      int dist = i-(LpS/2);
       int dist1 = abs(dist);
-      float speedmod = 0.1+float(float(dist1)/float(strip.numPixels()/2));
-      delay(int(float(DMX_EffectParameter)*speedmod));
+      float speedmod = 0.1+float(float(dist1)/float(LpS/2));
+      iDelay(int(float(velocity)*speedmod));
     }
-  } */
+  } 
 }
 
 /* Helper functions */
@@ -230,16 +252,16 @@ void wobble (){
 
 /*
 void setPixels(int count){
-  for (int i = 0; i<20;i++){
-    strip.setPixelColor(i, 0,0,0);
-  }
-  strip.show();
-  for (int i = 0; i<count;i++){
-    strip.setPixelColor(i, 45,0,255);
-  }
-  strip.show();
-}
-*/
+ for (int i = 0; i<20;i++){
+ strip.setPixelColor(i, 0,0,0);
+ }
+ strip.show();
+ for (int i = 0; i<count;i++){
+ strip.setPixelColor(i, 45,0,255);
+ }
+ strip.show();
+ }
+ */
 
 void rainbowCycle(uint8_t wait,float b) {
   int i, j;
@@ -288,6 +310,8 @@ uint32_t Wheel(byte WheelPos)
     return rgb(0, WheelPos * 3, 255 - WheelPos * 3);
   }
 }
+
+
 
 
 
