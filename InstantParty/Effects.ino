@@ -17,7 +17,7 @@ void black(){
 void blinky(){
   while (effect == BLINK){
   iDelay(2 * 270 - velocity);
-  setAllColor(randomColor);
+  setAllColor(randomColor());
   iDelay(2 * 270 - velocity);
   setAllBlack();
 }
@@ -25,7 +25,7 @@ void blinky(){
 
 void colorize(){
   while (effect == COLOR){
-  setAllColor(randomColor);
+  setAllColor(randomColor());
 }
 }
 
@@ -35,7 +35,7 @@ void strobe(){
   int maxi = random (10,wildness/2);
   while (i<maxi){
     for (int i = 0; i < segments;i++){
-      setSegmentColor(i,randomColor);
+      setSegmentColor(i,randomColor());
     }
     iDelay(5+(25-velocity/10));
     setAllBlack();
@@ -55,7 +55,7 @@ void rainbowfill(){
   setAllBlack();
   while(effect == RAINBOWFILL){
     for (i=0; i < strip.numPixels(); i++) {
-      strip.setPixelColor(i, Wheel(i*10,brightness));
+      strip.setPixelColor(i, Wheel(i*10));
       strip.show();
       delay(DMX_EffectParameter);
     }
@@ -68,8 +68,8 @@ void rainbowsweep(){
   setAllBlack();
   while(effect == RAINBOWSWEEP){
     for (i=0; i < 20; i++) {
-      strip.setPixelColor(i, Wheel(i*10,brightness));
-      strip.setPixelColor(40-i, Wheel(i*10,brightness));
+      strip.setPixelColor(i, Wheel(i*10));
+      strip.setPixelColor(40-i, Wheel(i*10));
 
       strip.show();
       delay(DMX_EffectParameter);
@@ -167,8 +167,8 @@ void rainbowsparkle(){
 
         if (sparks[i]>-1){ 
           float bright = sparks[i]/250.0;
-          strip.setPixelColor(i,Wheel(random(255),brightness*bright));
-          strip.setPixelColor(40-i,Wheel(random(255),brightness*bright));
+          strip.setPixelColor(i,Wheel(random(255)));
+          strip.setPixelColor(40-i,Wheel(random(255)));
 
           //strip.setPixelColor(i,sparks[i],sparks[i],sparks[i]);
           strip.show();
@@ -187,7 +187,8 @@ void rainbowsparkle(){
 }
 
 void wobble (){
-  float dots [strip.numPixels()+4];
+//  work around brightness here...
+/*  float dots [strip.numPixels()+4];
   while(effect == WOBBLE){
     for (int i = 0; i<strip.numPixels();i++){
       for (int i = 0;i < strip.numPixels()+4;i++)dots[i]=0.0;
@@ -197,7 +198,7 @@ void wobble (){
       dots[i]=0.05;
       dots[i+4]=0.05;
       for (int i = 0;i < strip.numPixels();i++){
-        strip.setPixelColor(i,Color(realRed,realGreen,realBlue,brightness*dots[i+2]));
+        strip.setPixelColor(i,rgb(realRed,realGreen,realBlue,brightness*dots[i+2]));
       }
       strip.show();
       int dist = i-(strip.numPixels()/2);
@@ -213,7 +214,7 @@ void wobble (){
       dots[i]=0.05;
       dots[i+4]=0.05;
       for (int i = 0;i < strip.numPixels();i++){
-        strip.setPixelColor(i,Color(realRed,realGreen,realBlue,brightness*dots[i+2]));
+        strip.setPixelColor(i,rgb(realRed,realGreen,realBlue,brightness*dots[i+2]));
       }
       strip.show();
       int dist = i-(strip.numPixels()/2);
@@ -221,7 +222,7 @@ void wobble (){
       float speedmod = 0.1+float(float(dist1)/float(strip.numPixels()/2));
       delay(int(float(DMX_EffectParameter)*speedmod));
     }
-  }
+  } */
 }
 
 /* Helper functions */
@@ -249,7 +250,7 @@ void rainbowCycle(uint8_t wait,float b) {
       // (thats the i / strip.numPixels() part)
       // Then add in j which makes the colors go around per pixel
       // the % 96 is to make the wheel cycle around
-      strip.setPixelColor(i, Wheel( ((i * 256 / strip.numPixels()) + j) % 256, b) );
+      strip.setPixelColor(i, Wheel( ((i * 256 / strip.numPixels()) + j) % 256));
     }  
     strip.show();   // write all the pixels out
     delay(wait);
@@ -276,26 +277,19 @@ void colorWipe(uint32_t c, uint8_t wait) {
 uint32_t Wheel(byte WheelPos)
 {
   if (WheelPos < 85) {
-    return Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+    return rgb(WheelPos * 3, 255 - WheelPos * 3, 0);
   } 
   else if (WheelPos < 170) {
     WheelPos -= 85;
-    return Color(255 - WheelPos * 3, 0, WheelPos * 3);
+    return rgb(255 - WheelPos * 3, 0, WheelPos * 3);
   } 
   else {
     WheelPos -= 170; 
-    return Color(0, WheelPos * 3, 255 - WheelPos * 3);
+    return rgb(0, WheelPos * 3, 255 - WheelPos * 3);
   }
 }
 
-void delayPoll(int milliseconds){
-  for (int i = 0; i < milliseconds; i++){
-    delay(1);
-    if (effectHasChanged){
-      selectEffect(true);  
-    }
-  }
-}
+
 
 
 

@@ -6,4 +6,11 @@ void checkPots(){
 	wildness = map(analogRead(wildPot),0,1023,0,255);
 }
 	
-
+void delayPoll(int milliseconds){
+  for (int i = 0; i < milliseconds; i++){
+    delay(1);
+    if (effectHasChanged){
+      selectEffect();  
+    }
+  }
+}
