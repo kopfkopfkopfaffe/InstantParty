@@ -24,9 +24,9 @@ void blinky(){
 }
 
 void colorize(){
-  while (effect == COLOR){
-    setAllColor(randomColor());
-  }
+  //  while (effect == COLOR){
+  setAllColor(randomColor());
+  //  }
 }
 
 // strobelight. the wilder, the longer. different for each segment
@@ -63,27 +63,51 @@ void rainbowfill(){
   }
 }
 
+//this is working for n segments now.
 void rainbowsweep(){
-  int i;
+  int i, j;
   setAllBlack();
   while(effect == RAINBOWSWEEP){
-    for (i=0; i < 20; i++) {
-      strip.setPixelColor(i, Wheel(i*10));
-      strip.setPixelColor(40-i, Wheel(i*10));
 
+    for (i=0; i < LpS; i++) {
+      for (j =0;j<segments;j++ ){
+        strip.setPixelColor(i+LpS*j, Wheel(i*10));
+        Serial.print(i);
+        Serial.print(",");
+        Serial.println(j);
+        //  strip.setPixelColor(39-i, Wheel(i*10));
+      }
       strip.show();
-      delay(DMX_EffectParameter);
+      iDelay(velocity);
     }
-    for (i=0; i < 20; i++) {
-      strip.setPixelColor(i,0);
-      strip.setPixelColor(40-i,0);
+
+    for (i=0; i < LpS; i++) {
+      for (j =0;j<segments;j++ ){
+        strip.setPixelColor(i+LpS*j,0);
+        //strip.setPixelColor(39-i,0);
+      }
       strip.show();
-      delay(DMX_EffectParameter);
+      iDelay(velocity);
+
     }
     setAllBlack();
   }
 }
 
+void explode(){
+  while (effect == EXPLODE){
+    // zwei pixel in der mitte sind am hellsten und laufen symetrisch nach aussen, dabei ziehen sie einen schweif hinter sich her
+    // eventuell generelle schweif-sachen bauen...
+    // der effekt passiert auf einem random-segment. nur immer auf einem.
+  }
+}
+
+void glare(){
+  while (effect == GLARE){
+    //irgendwo auf dem string beginnt ein pixel zu leuchten. das leuchten dehnt sich aus, mit weichen raendern. dann zieht es sich wieder zusammen.
+
+  }
+}
 
 void sparkle(){
   int sparks [strip.numPixels()];
@@ -192,12 +216,14 @@ void wobble (){
   while(effect == WOBBLE){
     // generate a random color and pick components
     uint32_t myColor = randomColor();
-    uint8_t myBlueRed = myColor;
-    uint8_t myGreen = myColor >>= 8;
-    uint8_t myRed = myColor >>= 16;
+    uint8_t myRed = myColor & 0xFF;
+    uint8_t myGreen = myColor >> 8;
+    uint8_t myBlue = myColor >> 16;
+
 
     // move dot to the right over all pixels of the segment
     for (int i = 0; i<LpS;i++){
+      Serial.println("blab");
       // set all pixels to black
       for (int i = 0;i < LpS+4;i++)dots[i]=0.0;
       // set the brightness at the dot center to full.
@@ -208,17 +234,20 @@ void wobble (){
       dots[i]=0.05;
       dots[i+4]=0.05;
       // for all segments
-      for (int j = 0;j<segments +1;j++){
-        // render all pixels in segment
-        for (int i = j * LpS; i < (j*LpS)+LpS;i++){
-          strip.setPixelColor(i,rgb(realRed,realGreen,realBlue,brightness*dots[i+2]));
+      for (int i=0; i < LpS; i++) {
+        for (int j =0;j<segments;j++ ){
+          Serial.println(i);
+          strip.setPixelColor(i+j*LpS,rgb(myRed,myGreen,myBlue,brightness*dots[i+2]));
+
         }
       }
       strip.show();
+      Serial.println("blib");
       int dist = i-(LpS/2);
       int dist1 = abs(dist);
       float speedmod = 0.1+float(float(dist1)/float(LpS/2));
       iDelay(int(float(velocity)*speedmod));
+      Serial.println("blob");
     }
 
 
@@ -232,19 +261,21 @@ void wobble (){
       dots[i]=0.05;
       dots[i+4]=0.05;
       // for all segments
-      for (int j = 0;j<segments +1;j++){
-        // render all pixels in segment
-        for (int i = j * LpS; i < (j*LpS)+LpS;i++){
-          strip.setPixelColor(i,rgb(realRed,realGreen,realBlue,brightness*dots[i+2]));
+
+      for (int i=0; i < LpS; i++) {
+        for (int j =0;j<segments;j++ ){
+          Serial.println(i);
+          strip.setPixelColor(i+j*LpS,rgb(myRed,myGreen,myBlue,brightness*dots[i+2]));
         }
       }
       strip.show();
       int dist = i-(LpS/2);
       int dist1 = abs(dist);
       float speedmod = 0.1+float(float(dist1)/float(LpS/2));
+
       iDelay(int(float(velocity)*speedmod));
     }
-  } 
+  }
 }
 
 /* Helper functions */
@@ -310,6 +341,11 @@ uint32_t Wheel(byte WheelPos)
     return rgb(0, WheelPos * 3, 255 - WheelPos * 3);
   }
 }
+
+
+
+
+
 
 
 

@@ -74,7 +74,6 @@ uint32_t rgb(byte r, byte g, byte b, float br)
 {
   r = byte(r * br);
   g = byte(g * br);
-
   b = byte(b * br);
 
   uint32_t c;
@@ -89,10 +88,17 @@ uint32_t rgb(byte r, byte g, byte b, float br)
 // select hue randomly around center hue with spread of gayness
 uint32_t randomColor(){
   uint32_t c;
-  int tmpHue = random (hue-gayness/2,hue+gayness/2);
-  unsigned int myHue;
+  // get random number in range gayness
+  signed int tmpHue = random (0,gayness);
+  // center gayness around 0
+  tmpHue = tmpHue - (gayness/2);
+  // modify by global hue > get hue += random(gayness/2)
+  tmpHue += hue;
+  unsigned int myHue = 0;
+  // adjust hue to 0-360
   if (tmpHue < 0) myHue = 360 + tmpHue;
-  if(tmpHue > 359) myHue = 360 - tmpHue;
+  else if(tmpHue > 359) myHue =  tmpHue - 360;
+  else myHue = tmpHue;
   c = hsv(myHue,255,255);
   return c;
 }
@@ -100,10 +106,17 @@ uint32_t randomColor(){
 // select hue randomly around center hue with spread of gayness
 uint32_t randomColor(uint8_t brightness){
   uint32_t c;
-  int tmpHue = random (hue-gayness/2,hue+gayness/2);
-  unsigned int myHue;
+  // get random number in range gayness
+  signed int tmpHue = random (0,gayness);
+  // center gayness around 0
+  tmpHue = tmpHue - (gayness/2);
+  // modify by global hue > get hue += random(gayness/2)
+  tmpHue += hue;
+  unsigned int myHue = 0;
+  // adjust hue to 0-360
   if (tmpHue < 0) myHue = 360 + tmpHue;
-  if(tmpHue > 359) myHue = 360 - tmpHue;
+  else if(tmpHue > 359) myHue =  tmpHue - 360;
+  else myHue = tmpHue;
   c = hsv(myHue,255,brightness);
   return c;
 }

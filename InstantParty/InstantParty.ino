@@ -17,12 +17,12 @@ uint8_t huePot = A2; // adjust the center of the color selection on the hue scal
 uint8_t wildPot = A3; // adjust the wildness of animation selection
 
 // Control variables
-uint8_t velocity = 0;
-uint8_t gayness = 0;
-uint8_t hue = 0;
-uint8_t wildness = 0;
+uint8_t velocity = 100;
+uint16_t gayness =  360;
+uint16_t hue = 150;
+uint8_t wildness = 10;
 
-unsigned int brightness = 255;
+float brightness = 1.0;
 unsigned int saturation = 255;
 
 // Effect numbers
@@ -38,6 +38,8 @@ unsigned int saturation = 255;
 #define RAINBOWSWEEP 9
 #define RAINBOWSPARKLE 10
 #define WOBBLE 11
+#define EXPLODE 12
+#define GLARE 13  
 
 // Mode numbers
 #define LOOP 1
@@ -46,7 +48,6 @@ unsigned int saturation = 255;
 //uint8_t effect = RAINBOWSWEEP;
 //uint8_t effect = COLOR;
 //uint8_t effect = STROBE;
-
 uint8_t effect = WOBBLE;
 //uint8_t effect = RAINBOWSPARKLE;
 boolean effectHasChanged = false;
@@ -69,15 +70,23 @@ Adafruit_WS2801 strip = Adafruit_WS2801(segments * LpS, dataPin, clockPin);
 
 void setup() {             
   strip.begin();
+  Serial.begin(9600);
+ // delay (5000);
   strip.show();
   selectEffect();
+
 }
 
 void loop() 
 {
-  selectEffect();
-  setEffectRandom();
-  setColorsRandom();
+  //selectEffect();
+  // setEffectRandom();
+  // setColorsRandom();
+
+  colorize();
+  delay(10);
+  hue ++;
+  if(hue >359)hue = 0;
 }
 
 
@@ -163,6 +172,7 @@ void setColorsRandom(){
 
 
 }
+
 
 
 
